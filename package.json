@@ -1,0 +1,13 @@
+{
+    "name"         : "node-red-contrib-phidgets-accelerometer",
+    "version"      : "0.0.1",
+    "description"  : "Input node to read data from the phidgets acceleromter",
+    "dependencies": {
+    },
+    "keywords": [ "node-red" ],
+    "node-red"     : {
+        "nodes": {
+            "node-phidgets-accelerometer": "node-phidgets-accelerometer/accelerometer.js"
+        }
+    }
+}
