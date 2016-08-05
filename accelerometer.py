@@ -47,54 +47,49 @@ class message:
         else :
             return False
 
-try :
-
-    #sys.exit(1)
-    dir_path = os.path.dirname(os.path.realpath(__file__)) + '/accelerometer_py.log'
-    logging.basicConfig(filename=dir_path,level=logging.DEBUG)
-    logging.debug(str(sys.argv))
-
-    parser = argparse.ArgumentParser(description='read data from phidget and print it grouped on stdout')
-
-    #parser.add_argument('--sensor_update_rate', nargs=1 ,action="store_true", help="set the update rate from the sensor (in ms)", default=1 )
-    #parser.add_argument('--message_update_rate',action="store_true", help="indicate how long data is being collected before sending a message (in s)", default=10 )
-    parser.add_argument('--sensor_update_rate', nargs=1, type=int )
-    parser.add_argument('--message_update_rate', nargs=1, type=int )
-    args = parser.parse_args()
-
-    logging.debug(args)
 
 
-    myMessage=None
-    while True:
-        try :
-            if myMessage==None :
-                myMessage=message("accelerometer",10)
 
-            if myMessage.overdue():
-                myMessage = message("accelerometer", 10)
+dir_path = os.path.dirname(os.path.realpath(__file__)) + '/accelerometer_py.log'
+logging.basicConfig(filename=dir_path,level=logging.DEBUG)
+logging.debug(str(sys.argv))
 
-            myMessage.add_record({
-                "tstamp" : time(),
-                "x" : random.random(),
-                "y" : random.random(),
-                "z": random.random()
-            })
+parser = argparse.ArgumentParser(description='read data from phidget and print it grouped on stdout')
 
-            response =  myMessage.pprint()
-            logging.debug("message printed = %s" % response)
+#parser.add_argument('--sensor_update_rate', nargs=1 ,action="store_true", help="set the update rate from the sensor (in ms)", default=1 )
+#parser.add_argument('--message_update_rate',action="store_true", help="indicate how long data is being collected before sending a message (in s)", default=10 )
+parser.add_argument('--sensor_update_rate', nargs=1, type=int )
+parser.add_argument('--message_update_rate', nargs=1, type=int )
+args = parser.parse_args()
 
-        except Exception as e :
-            logging.error("error !!!")
-            logging.exception(e)
-            msg={ "result" : "nok", "payload" : repr(e)}
-
-        logging.debug("sleep for : %s" % args.sensor_update_rate)
-        sleep(float(args.sensor_update_rate[0]))
+logging.debug(args)
 
 
-except Exception as e:
+myMessage=None
+while True:
+    try :
+        if myMessage==None :
+            myMessage=message("accelerometer",10)
 
-    logging.error("pb")
-    logging.exception(e)
-    raise e
+        if myMessage.overdue():
+            myMessage = message("accelerometer", 10)
+
+        myMessage.add_record({
+            "tstamp" : time(),
+            "x" : random.random(),
+            "y" : random.random(),
+            "z": random.random()
+        })
+
+        response =  myMessage.pprint()
+        logging.debug("message printed = %s" % response)
+
+    except Exception as e :
+        logging.error("-- error !!!")
+        logging.exception(e)
+        msg={ "result" : "nok", "payload" : repr(e)}
+
+    logging.debug("sleep for : %s" % args.sensor_update_rate)
+    sleep(float(args.sensor_update_rate[0]))
+
+

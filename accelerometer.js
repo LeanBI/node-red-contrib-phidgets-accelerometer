@@ -9,7 +9,7 @@ module.exports = function(RED) {
 
         toExecute=""
         toExecute+=__dirname + "/accelerometer.py";
-        node.log(toExecute);
+        //node.log(toExecute);
 
 
         const ls = spawn('python',["-u", toExecute,"--sensor_update_rate", "3"]);
