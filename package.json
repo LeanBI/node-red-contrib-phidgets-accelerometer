@@ -1,10 +1,15 @@
 {
     "name"         : "node-red-contrib-phidgets-accelerometer",
-    "version"      : "0.0.2",
+    "version"      : "0.0.4",
     "description"  : "Input node to read data from the phidgets accelerometer",
     "dependencies": {
     },
     "keywords": [ "node-red", "phigets", "accelerometer" ],
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/evantahler/nodePhidgets.git"
+        },
+    "homepage": "http://leanbi.ch/industrie-40",
     "node-red"     : {
         "nodes": {
             "node-phidgets-accelerometer": "node-red-contrib-phidgets-accelerometer/accelerometer.js"
