@@ -1,47 +1,61 @@
 module.exports = function(RED) {
+
     function AccelerometerNode(config) {
-        this.status({fill:"red",shape:"dot",text:"not started"});
-        var spawn = require('child_process').spawn;
-
-
-        RED.nodes.createNode(this,config);
+    	var Phidget = require('phidgetapi').Spatial;
+    
+    	RED.nodes.createNode(this,config);
         var node = this;
+        this.status({fill:"red",shape:"dot",text:"not started"});
+        
+        var payload=[];
+        node.log(JSON.stringify(config))
+        var sensor_update_rate=config.sensor_update_rate
+        var message_update_rate=config.message_update_rate * 1000
+        var message_attended= message_update_rate /  sensor_update_rate
+        
+        function sendMessage(){
+        	nbData=payload.length;
+        	if (nbData >0){
+            	//msg["payload"]=payload;
+            	msg["time_stop"]=Date.now()
+            	node.send(msg)
+            	payload=[];
+            	rowNb=0
+            	msg["time_start"]=Date.now()
+            	
+            	node.status({fill:"green",shape:"dot",text:"receiving data ("+ nbData + "/s)"});
+        	} else {
+        		node.warn("no data")
+        		node.status({fill:"green",shape:"dot",text:"no data"});
+        	}
 
-        toExecute=""
-        toExecute+=__dirname + "/accelerometer.py";
-        //node.log(toExecute);
 
-
-        const ls = spawn('python',["-u", toExecute,"--sensor_update_rate", "3"]);
-
-        ls.stdout.on('data', (data) => {
-            msg=JSON.parse(data)
-            this.status({fill:"green",shape:"dot",text:"receiving data"});
-            //node.log(this.status)
-            node.send(msg);
-          });
-
-
-          ls.stderr.on('data', (data) => {
-          msg={ "result":"nok", "payload": data}
-          node.warn("result=" + msg["result"]  + " data=" + data)
-          node.send(msg)
-          }
-
-        );
-
-        ls.on('close', (code) => {
-            msg=`process exited ${code}`
-          this.status({fill:"red",shape:"dot",text:msg});
-          node.log(msg);
-        });
-
-        ls.on('error', (err) => {
-            msg('Failed to start')
-            node.warn(msg);
-            this.status({fill:"red",shape:"dot",text:msg});
-        });
-
+        }
+        
+        function getData() {
+        	if (spatial.acceleration.length>0) {
+	        	row={}
+	        	row["accelerometer_x"]= spatial.acceleration[0]
+	        	row["accelerometer_y"]= spatial.acceleration[1]
+	        	row["accelerometer_z"]= spatial.acceleration[2]        	
+	        	payload.push(row)
+	        	
+	        	if (payload.length >= message_attended) {
+	        		sendMessage()
+	        	};
+	        		
+        	}
+        	else{
+        		node.warn("no data received (device not ready ?)")
+        	}
+        }
+        
+        spatial=new Phidget()
+        //node.log("phidget object=" + JSON.stringify(spatial))
+        msg={topic:"accelerometer", payload:payload}
+        spatial.connect()
+        node.log("starting gathering data : message_attended=" + message_attended)
+        setInterval (getData,sensor_update_rate); 
 
     }
     RED.nodes.registerType("accelerometer",AccelerometerNode);
