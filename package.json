@@ -7,7 +7,7 @@
     "keywords": [ "node-red", "phigets", "accelerometer" ],
     "repository": {
         "type": "git",
-        "url": "git://github.com/evantahler/nodePhidgets.git"
+        "url": "git://github.com/sbrennion/node-red-contrib-phidgets-accelerometer.git"
         },
     "homepage": "http://leanbi.ch/industrie-40",
     "node-red"     : {
